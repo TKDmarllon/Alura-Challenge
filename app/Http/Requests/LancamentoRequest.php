@@ -29,7 +29,7 @@ class LancamentoRequest extends AbstractRequest
         return [
             'descricao'=>'required',
             'valor'=>'required|gt:0',
-            'data'=>'required|date_format:d/m/Y'
+            'data'=>'required|date_format:d-m-Y'
         ];
     }
 
