@@ -29,7 +29,7 @@ class LancamentoRequest extends AbstractRequest
         return [
             'descricao'=>'required',
             'valor'=>'required|gt:0',
-            'data'=>['required|date_format:m/d/Y']
+            'data'=>'required|date_format:d/m/Y'
         ];
     }
 
@@ -40,6 +40,7 @@ class LancamentoRequest extends AbstractRequest
             'valor.required'=>'O valor precisa ser preenchido.',
             'valor.gt'=>'O valor precisa ser positivo.',
             'data.required'=>'A data precisa ser preenchida.',
+            'data.date_format'=>'Data inválida.'
         ];
     }
 }

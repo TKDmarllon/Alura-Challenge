@@ -3,14 +3,16 @@
 namespace App\Repository;
 
 use App\Models\Receita;
+use App\Entities\Receita as ReceitaEntity;
 use Illuminate\Database\Eloquent\Collection;
 
 class ReceitaRepository{  
 
 
-    public function criarReceita(Receita $lancamento):Receita
+    public function criarReceita(ReceitaEntity $lancamento)
     {
-        return Receita::create($lancamento->getAttributes());
+        $criado= Receita::create($lancamento->toArray());
+        return $criado;
     }
 
     public function listarTodasReceitas():Collection
@@ -18,14 +20,14 @@ class ReceitaRepository{
         return Receita::all();
     }
 
-    public function ListarUmaReceita($id):Receita
+    public function ListarUmaReceita($id)
     {
         return Receita::findorfail($id);
     }
 
-    public function atualizarReceita($id):Receita
+    public function atualizarReceita($lancamento)
     {
-        return Receita::findorfail($id);
+        $lancamento->save();
     }
 
     public function deletarReceita($id):int

@@ -2,8 +2,10 @@
 
 namespace App\Service;
 
+use App\Entities\Receita as ReceitaEntity;
 use App\Models\Receita;
 use App\Repository\ReceitaRepository;
+use DateTime;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 
@@ -17,9 +19,8 @@ public function __construct(
     $this->receitaRepository = $receitaRepository;
 }
 
-public function criarReceita(Receita $lancamento):Receita
+public function criarReceita(ReceitaEntity $lancamento):Receita
 {
-    
     return $this->receitaRepository->criarReceita($lancamento);
 }
 
@@ -33,39 +34,32 @@ public function ListarUmaReceita($id):Receita
     return $this->receitaRepository->listarUmaReceita($id);
 }
 
-public function atualizarReceita($novosDados)
+private function retornaMes(string $data)
 {
-    $atualizar=$novosDados[0];
-    $id=$novosDados[1];
+    $dataNova=new DateTime($data);
+    return $dataNova->format('m');
+}
 
-    $data=$atualizar['data'];
-    $dataSeparada=explode('-',$data);
-    $verificaData=checkdate($dataSeparada[1],$dataSeparada[0],$dataSeparada[2]);
-    $mesNovo=$dataSeparada[1];
+public function atualizarReceita($id, $atualizar)
+{
+    $mesNovo=$this->retornaMes($atualizar['data']);
 
-    if ($verificaData === false) {
-        return new JsonResponse("Data inválida.");
-    }
+    $lancamento=$this->receitaRepository->ListarUmaReceita($id);
 
-    $lancamento=$this->receitaRepository->atualizarReceita($id);
+    $mesAntigo=$this->retornaMes($lancamento->data);
 
-    $dataComparar=$atualizar['data'];
-    $dataCompararSeparada=explode('-',$dataComparar);
-    $mesAntigo=$dataCompararSeparada[1];
-
-    $comparaDescricao= $lancamento['descricao']==$atualizar['descricao'];
+    $comparaDescricao= $lancamento->descricao==$atualizar['descricao'];
     $comparaData= $mesNovo==$mesAntigo;
 
-    if ($comparaData !== true && $comparaDescricao !==true ) {
+    if ($comparaData && $comparaDescricao ) {
         return new JsonResponse("Negado, já existe uma receita cadastrada com mesma descrição ne data.");
     }
+    
+    $lancamento->descricao=$atualizar['descricao'];
+    $lancamento->data=$atualizar['data'];
+    $lancamento->valor=$atualizar['valor'];
 
-    $lancamento-> update([
-        'descricao'=>$atualizar['descricao'],
-        'valor'=>$atualizar['valor'],
-        'data'=>$atualizar['data']
-    ]);
-    return new JsonResponse("Receita atualizada.");
+    $this->receitaRepository->atualizarReceita($lancamento);
 }
 
 public function deletarReceita($id):int

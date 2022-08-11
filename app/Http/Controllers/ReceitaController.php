@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LancamentoRequest;
-use App\Models\Receita;
+use App\Entities\Receita;
 use App\Service\ReceitaService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use DateTime as Date;
 
 class ReceitaController extends Controller
 {
@@ -19,10 +20,13 @@ class ReceitaController extends Controller
         $this->receitaService = $receitaService;
     }
     public function criarReceita(LancamentoRequest $request):JsonResponse
-    {
-        $lancamento= new Receita($request->all());
-        $this->receitaService->criarReceita($lancamento);
-        return new JsonResponse("Receita cadastrada.");
+    {   
+        
+        $lancamento= new Receita($request->get('descricao'),
+                                $request->get('valor'),
+                                new Date ($request->get('data')));
+        $criado=$this->receitaService->criarReceita($lancamento);
+        return new JsonResponse($criado, 201);
     }
 
     public function listarTodasReceitas():Collection
@@ -30,15 +34,14 @@ class ReceitaController extends Controller
         return $this->receitaService->listarTodasReceitas();
     }
 
-    public function ListarUmaReceita($id):Receita
+    public function ListarUmaReceita($id)
     {
         return $this->receitaService->listarUmaReceita($id);
     }
 
     public function atualizarReceita(Request $request, $id)
     {
-        $novosDados= [New Request($request->all()),$id];
-        return $this->receitaService->atualizarReceita($novosDados);
+        return $this->receitaService->atualizarReceita($id,$request->all());
     }
 
     public function deletarReceita($id):JsonResponse
