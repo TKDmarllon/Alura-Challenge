@@ -84,6 +84,17 @@ services:
             - '/dev/shm:/dev/shm'
         networks:
             - sail
+    myadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        links:
+          - mysql
+        ports:
+          - 1313:80
+        environment:
+          - PMA_ARBITRARY=1
+        networks:
+          - sail
+
 networks:
     sail:
         driver: bridge

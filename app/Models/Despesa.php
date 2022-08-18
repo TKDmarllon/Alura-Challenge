@@ -9,5 +9,5 @@ class Despesa extends Model
 {
     use HasFactory;
     protected $table='despesa';
-    protected $fillable=['descricao','valor','data'];
+    protected $fillable=['descricao','valor','data','categoria'];
 }

@@ -3,14 +3,15 @@
 namespace App\Repository;
 
 use App\Models\Despesa;
+use App\Entities\Despesa as DespesaEntity;
 use Illuminate\Database\Eloquent\Collection;
 
-class DespesaRepository
+class DespesaRepository 
 {  
 
-    public function criarDespesa(Despesa $lancamento):Despesa
+    public function criarDespesa(DespesaEntity $lancamento):Despesa
     {
-        return Despesa::create($lancamento->getAttributes());
+        return Despesa::create($lancamento->toArray());
     }
 
     public function listarTodasDespesas():Collection
@@ -18,14 +19,20 @@ class DespesaRepository
         return Despesa::all();
     }
 
+    public function buscaDuplicado($data,$descricaoNova)
+    {
+        return Despesa::where('descricao', $descricaoNova)
+        ->whereMonth('data', '=', $data)->get();
+    }
+
     public function ListarUmaDespesa($id):Despesa
     {
         return Despesa::findorfail($id);
     }
 
-    public function atualizarDespesa($id):Despesa
+    public function atualizarDespesa($lancamento)
     {
-        return Despesa::findorfail($id);
+        $lancamento->save();
     }
 
     public function deletarDespesa($id):int

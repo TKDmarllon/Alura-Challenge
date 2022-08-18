@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('descricao');
             $table->string('valor');
-            $table->string('data');
+            $table->date('data');
         });
     }
 

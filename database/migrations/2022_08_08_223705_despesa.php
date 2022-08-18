@@ -16,9 +16,10 @@ return new class extends Migration
         Schema::create('despesa', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->string('categoria')->default('Outras');
             $table->string('descricao');
             $table->string('valor');
-            $table->string('data');
+            $table->date('data');
         });
     }
 
