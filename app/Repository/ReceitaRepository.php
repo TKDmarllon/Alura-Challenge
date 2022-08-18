@@ -11,13 +11,18 @@ class ReceitaRepository{
 
     public function criarReceita(ReceitaEntity $lancamento)
     {
-        $criado= Receita::create($lancamento->toArray());
-        return $criado;
+       return Receita::create($lancamento->toArray());
     }
 
     public function listarTodasReceitas():Collection
     {
         return Receita::all();
+    }
+
+    public function buscaDuplicado($data,$descricaoNova)
+    {
+        return Receita::where('descricao', $descricaoNova)
+        ->whereMonth('data', '=', $data)->get();
     }
 
     public function ListarUmaReceita($id)

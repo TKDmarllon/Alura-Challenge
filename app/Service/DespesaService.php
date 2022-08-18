@@ -5,10 +5,14 @@ namespace App\Service;
 use App\Models\Despesa;
 use App\Repository\DespesaRepository;
 use Illuminate\Database\Eloquent\Collection;
+use App\Entities\Despesa as DespesaEntity;
+use App\Exceptions\ReceitaException;
+use DateTime;
+use Illuminate\Http\JsonResponse;
 
 class DespesaService {
 
-    protected $contaService;
+    protected $contaService; 
 
     public function __construct(
         DespesaRepository $despesaRepository
@@ -16,8 +20,16 @@ class DespesaService {
         $this->despesaRepository = $despesaRepository;
     }
 
-    public function criarDespesa(Despesa $lancamento):Despesa
+    public function criarDespesa(DespesaEntity $lancamento):Despesa
     {
+        $comparaData = $this->despesaRepository->buscaDuplicado($lancamento->getData()->format('m'),
+                                                                $lancamento->getDescricao());
+    
+        if (!$comparaData->isEmpty()) {
+            throw new ReceitaException("Negado, já existe uma receita cadastrada com mesma descrição nesta data.", 400);
+        }
+    
+    
         return $this->despesaRepository->criarDespesa($lancamento);
     }
 
@@ -31,19 +43,32 @@ class DespesaService {
         return $this->despesaRepository->listarUmaDespesa($id);
     }
 
+    private function retornaMes(string $data)
+{
+    $dataNova=new DateTime($data);
+    return $dataNova->format('m');
+}
 
-    public function atualizarDespesa($novosDados)
+    public function atualizarDespesa($id, $atualizar)
     {
-        $atualizar=$novosDados[0];
-        $id=$novosDados[1];
-
-        $lancamento=$this->despesaRepository->atualizarDespesa($id);
-
-        $lancamento-> update([
-            'descricao'=>$atualizar['descricao'],
-            'valor'=>$atualizar['valor'],
-            'data'=>$atualizar['data']
-        ]);
+        $mesNovo=$this->retornaMes($atualizar['data']);
+    
+        $lancamento=$this->despesaRepository->ListarUmaDespesa($id);
+    
+        $mesAntigo=$this->retornaMes($lancamento->data);
+    
+        $comparaDescricao= $lancamento->descricao==$atualizar['descricao'];
+        $comparaData= $mesNovo==$mesAntigo;
+    
+        if ($comparaData && $comparaDescricao ) {
+            return new JsonResponse ("Negado, já existe uma receita cadastrada com mesma descrição ne data.");
+        }
+        
+        $lancamento->descricao=$atualizar['descricao'];
+        $lancamento->data=$atualizar['data'];
+        $lancamento->valor=$atualizar['valor'];
+    
+        $this->despesaRepository->atualizarDespesa($lancamento);
     }
 
     public function deletarDespesa($id):int

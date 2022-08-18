@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LancamentoRequest;
 use App\Entities\Receita;
+use App\Exceptions\ReceitaException;
 use App\Service\ReceitaService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use DateTime as Data;
+use Exception;
 
 class ReceitaController extends Controller
 {
@@ -20,11 +22,20 @@ class ReceitaController extends Controller
     }
     public function criarReceita(LancamentoRequest $request):JsonResponse
     {   
-        $lancamento= new Receita(  $request->get('descricao'),
-                                   $request->get('valor'),
-                     new Data ($request->get('data')));
-        $criado=$this->receitaService->criarReceita($lancamento);
-        return new JsonResponse($criado, 201);
+
+        try {
+            $lancamento= new Receita(  $request->get('descricao'),
+                                       $request->get('valor'),
+                             new Data ($request->get('data')));
+                        
+            $criado=$this->receitaService->criarReceita($lancamento);
+
+            return new JsonResponse($criado, 201);
+
+        } catch (ReceitaException $e) {
+            return new JsonResponse($e->getMessage(),$e->getCode());
+        }
+
     }
 
     public function listarTodasReceitas():Collection
@@ -39,7 +50,16 @@ class ReceitaController extends Controller
 
     public function atualizarReceita(LancamentoRequest $request, $id)
     {
-        return $this->receitaService->atualizarReceita($id,$request->all());
+        try {
+            $lancamento= new Receita(  $request->get('descricao'),
+                                       $request->get('valor'),
+                             new Data ($request->get('data')));
+            return $this->receitaService->atualizarReceita($id,$lancamento);
+
+        } catch (ReceitaException $e) {
+            return new JsonResponse($e->getMessage(),$e->getCode());
+        }
+        
         
     }
 

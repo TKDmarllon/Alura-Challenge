@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LancamentoRequest;
-use App\Models\Despesa;
+use App\Models\Despesa as ModelsDespesa;
+use App\Entities\Despesa;
+use App\Exceptions\ReceitaException;
 use App\Service\DespesaService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use DateTime as Data;
+
 
 class DespesaController extends Controller
 {
@@ -19,10 +22,20 @@ class DespesaController extends Controller
     }
 
     public function criarDespesa(LancamentoRequest $request):JsonResponse
-    {
-        $conta= new Despesa($request->all());
-        $this->despesaService->criarDespesa($conta);
-        return new JsonResponse("Despesa cadastrada.");
+    {   
+        try {
+            $lancamento= new Despesa(  $request->get('descricao'),
+                                       $request->get('valor'),
+                                       new Data ($request->get('data')),
+                                       $request->get('categoria'));
+                        
+            $criado=$this->despesaService->criarDespesa($lancamento);
+
+            return new JsonResponse($criado, 201);
+
+        } catch (ReceitaException $e) {
+            return new JsonResponse($e->getMessage(),$e->getCode());
+        }
     }
 
     public function listarTodasDespesas()
@@ -30,16 +43,14 @@ class DespesaController extends Controller
         return $this->despesaService->listarTodasDespesas();
     }
 
-    public function ListarUmaDespesa($id):Despesa
+    public function ListarUmaDespesa($id):ModelsDespesa
     {
         return $this->despesaService->ListarUmaDespesa($id);
     }
 
-    public function atualizarDespesa(Request $request, $id)
+    public function atualizarDespesa(LancamentoRequest $request, $id)
     {
-        $novosDados= [New Request($request->all()),$id];
-        $novosDados=$this->despesaService->atualizarDespesa($novosDados);
-        return new JsonResponse("Despesa atualizada.");
+        return $this->despesaService->atualizarDespesa($id,$request->all());
     }
 
     public function deletarDespesa($id):JsonResponse

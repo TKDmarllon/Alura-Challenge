@@ -3,11 +3,10 @@
 namespace App\Service;
 
 use App\Entities\Receita as ReceitaEntity;
+use App\Exceptions\ReceitaException;
 use App\Models\Receita;
 use App\Repository\ReceitaRepository;
-use DateTime;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\JsonResponse;
 
 class ReceitaService {
 
@@ -19,8 +18,16 @@ public function __construct(
     $this->receitaRepository = $receitaRepository;
 }
 
-public function criarReceita(ReceitaEntity $lancamento):Receita
+public function criarReceita(ReceitaEntity $lancamento)
 {
+    $comparaData = $this->receitaRepository->buscaDuplicado($lancamento->getData()->format('m'),
+                                                            $lancamento->getDescricao());
+
+    if (!$comparaData->isEmpty()) {
+        throw new ReceitaException("Negado, já existe uma receita cadastrada com mesma descrição nesta data.", 400);
+    }
+
+
     return $this->receitaRepository->criarReceita($lancamento);
 }
 
@@ -34,30 +41,21 @@ public function ListarUmaReceita($id):Receita
     return $this->receitaRepository->listarUmaReceita($id);
 }
 
-private function retornaMes(string $data)
-{
-    $dataNova=new DateTime($data);
-    return $dataNova->format('m');
-}
-
 public function atualizarReceita($id, $atualizar)
 {
-    $mesNovo=$this->retornaMes($atualizar['data']);
 
     $lancamento=$this->receitaRepository->ListarUmaReceita($id);
 
-    $mesAntigo=$this->retornaMes($lancamento->data);
+    $comparaData = $this->receitaRepository->buscaDuplicado($atualizar->getData()->format("m"),
+                                                            $atualizar->getDescricao());
 
-    $comparaDescricao= $lancamento->descricao==$atualizar['descricao'];
-    $comparaData= $mesNovo==$mesAntigo;
-
-    if ($comparaData && $comparaDescricao ) {
-        return new JsonResponse("Negado, já existe uma receita cadastrada com mesma descrição ne data.");
+    if (!$comparaData->isEmpty()) {
+        throw new ReceitaException("Negado, já existe uma receita cadastrada com mesma descrição nesta data.", 400);
     }
     
-    $lancamento->descricao=$atualizar['descricao'];
-    $lancamento->data=$atualizar['data'];
-    $lancamento->valor=$atualizar['valor'];
+    $lancamento->descricao=$atualizar->getDescricao();
+    $lancamento->data=$atualizar->getData();
+    $lancamento->valor=$atualizar->getValor();
 
     $this->receitaRepository->atualizarReceita($lancamento);
 }
