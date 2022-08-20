@@ -54,4 +54,12 @@ class ReceitaRepository{
     {
         return Receita::where('descricao', '=', $descricao)->get();
     }
+
+    public function totalReceita($ano,$mes)
+    {
+        return Receita::whereYear('data', '=', $ano)
+                        ->whereMonth('data', '=', $mes)
+                        ->selectRaw('SUM(receita.valor) AS valorTotal')
+                        ->get();
+    }
 }
