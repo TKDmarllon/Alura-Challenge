@@ -6,6 +6,7 @@ use App\Repository\DespesaRepository;
 use App\Repository\ReceitaRepository;
 use App\Service\ReceitaService;
 use App\Service\DespesaService;
+use Illuminate\Http\JsonResponse;
 
 class ResumoService
 {
@@ -31,10 +32,13 @@ public function resumo($ano,$mes)
 {
     $totalReceita=$this->receitaRepository->totalReceita($ano,$mes)->pluck('valorTotal');
     $totalDespesa=$this->despesaRepository->totalDespesa($ano,$mes)->pluck('valorTotal');
-    $resumo=$totalReceita[0]-$totalDespesa[0];
-    $totalDespesaCategoria=$this->despesaRepository->totalDespesaCategoria($ano,$mes)->pluck('categoria','valorTotal');
-    dd($totalDespesaCategoria);
-
+    $balanco=$totalReceita[0]-$totalDespesa[0];
+    $totalDespesaCategoria=$this->despesaRepository->totalDespesaCategoria($ano,$mes)->pluck('valorTotal','categoria');
+    $resumo= ["Total_Receita"=>$totalReceita,
+              "Total_Despesa"=>$totalDespesa,
+              "Resumo"=>$balanco,
+              "Despesa_por_categoria"=>$totalDespesaCategoria];
+    return new Jsonresponse ($resumo);
 }
 
 }
