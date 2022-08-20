@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('receita', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('descricao');
-            $table->string('valor');
-            $table->date('data');
+            $table->string('descricao')->empty();
+            $table->string('valor')->empty();
+            $table->date('data')->empty();
         });
     }
 
