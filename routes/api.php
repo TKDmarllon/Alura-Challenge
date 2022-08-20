@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DespesaController;
 use App\Http\Controllers\ReceitaController;
+use App\Http\Controllers\ResumoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +29,7 @@ use Illuminate\Support\Facades\Route;
     Route::get("/receitas/{ano}/{mes}",[ReceitaController::class, "listarAnoMes"]);
     Route::get("/receitas?descricao=xpto",[ReceitaController::class, "listarTodasReceitas"]);
 
+    Route::get("/resumo/{ano}/{mes}",[ResumoController::class, "resumo"]);
 
     Route::post("/despesa", [DespesaController::class, "criarDespesa"]);
     Route::get("/despesas", [DespesaController::class, "listarTodasDespesas"]);

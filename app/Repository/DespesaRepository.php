@@ -54,4 +54,22 @@ class DespesaRepository
     {
         return Despesa::where('descricao', '=', $descricao)->get();
     }
+
+    public function totalDespesa($ano,$mes)
+    {
+        return Despesa::whereYear('data', '=', $ano)
+                        ->whereMonth('data', '=', $mes)
+                        ->selectRaw('SUM(despesa.valor) AS valorTotal')
+                        ->get();
+    }
+
+    public function totalDespesaCategoria($ano,$mes)
+    {
+        return Despesa::whereYear('data', '=', $ano)
+                        ->whereMonth('data', '=', $mes)
+                        ->selectRaw('categoria')
+                        ->selectRaw('SUM(despesa.valor) AS valorTotal')
+                        ->GROUPBY('categoria')
+                        ->get();
+    }
 }

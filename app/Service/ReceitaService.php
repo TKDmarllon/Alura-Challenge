@@ -75,4 +75,11 @@ public function listarAnoMes($ano, $mes)
 {
     return $this->receitaRepository->listarAnoMes($ano, $mes);
 }
+
+public function resumo($ano, $mes)
+{
+    $resumoReceita=$this->receitaRepository->listarAnoMes($ano, $mes);
+    $resumoDespesa=$this->depesaRepository->listarAnoMes($ano, $mes);
+    dd($resumoReceita,$resumoDespesa);
+}
 }
