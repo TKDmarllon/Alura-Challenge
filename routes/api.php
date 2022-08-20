@@ -25,6 +25,8 @@ use Illuminate\Support\Facades\Route;
     Route::get("/receitas/{id}", [ReceitaController::class, "listarUmaReceita"]);
     Route::put("/receitas/{id}", [ReceitaController::class, "atualizarReceita"]);
     Route::delete("/receitas/{id}",[ReceitaController::class,"deletarReceita"]);
+    Route::get("/receitas/{ano}/{mes}",[ReceitaController::class, "listarAnoMes"]);
+    Route::get("/receitas?descricao=xpto",[ReceitaController::class, "listarTodasReceitas"]);
 
 
     Route::post("/despesa", [DespesaController::class, "criarDespesa"]);
@@ -32,3 +34,5 @@ use Illuminate\Support\Facades\Route;
     Route::get("/despesas/{id}", [DespesaController::class, "listarUmaDespesa"]);
     Route::put("/despesas/{id}", [DespesaController::class, "atualizarDespesa"]);
     Route::delete("/despesas/{id}",[DespesaController::class,"deletarDespesa"]);
+    Route::get("/despesas/{ano}/{mes}",[DespesaController::class, "listarAnoMes"]);
+    Route::get("/despesas?descricao=xpto",[DespesaController::class, "listarTodasDespesas"]);

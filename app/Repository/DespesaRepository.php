@@ -19,6 +19,11 @@ class DespesaRepository
         return Despesa::all();
     }
 
+    public function listarBusca($busca):Collection
+    {
+        return Despesa::where('descricao',$busca)->get();
+    }
+
     public function buscaDuplicado($data,$descricaoNova)
     {
         return Despesa::where('descricao', $descricaoNova)
@@ -38,5 +43,15 @@ class DespesaRepository
     public function deletarDespesa($id):int
     {
         return Despesa::destroy($id);
+    }
+
+    public function listarAnoMes($ano, $mes)
+    {
+        return Despesa::whereYear('data', '=', $ano)->whereMonth('data', '=', $mes)->get();
+    }
+
+    public function buscaDescricao($descricao)
+    {
+        return Despesa::where('descricao', '=', $descricao)->get();
     }
 }

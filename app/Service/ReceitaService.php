@@ -20,20 +20,21 @@ public function __construct(
 
 public function criarReceita(ReceitaEntity $lancamento)
 {
-    $comparaData = $this->receitaRepository->buscaDuplicado($lancamento->getData()->format('m'),
-                                                            $lancamento->getDescricao());
+    $comparaDuplicado = $this->retornaDuplicado($lancamento);
 
-    if (!$comparaData->isEmpty()) {
-        throw new ReceitaException("Negado, já existe uma receita cadastrada com mesma descrição nesta data.", 400);
+    if (!$comparaDuplicado->isEmpty()) {
+        throw new ReceitaException("Negado, já existe uma receita cadastrada com 
+                                    mesma descrição nesta data.", 400);
     }
-
-
     return $this->receitaRepository->criarReceita($lancamento);
 }
 
-public function listarTodasReceitas():Collection
+public function listarTodasReceitas($busca):Collection
 {
-    return $this->receitaRepository->listarTodasReceitas();
+    if (empty($busca)) {
+        return $this->receitaRepository->listarTodasReceitas();
+    }
+    return $this->receitaRepository->listarBusca($busca);
 }
 
 public function ListarUmaReceita($id):Receita
@@ -45,12 +46,11 @@ public function atualizarReceita($id, $atualizar)
 {
 
     $lancamento=$this->receitaRepository->ListarUmaReceita($id);
-
-    $comparaData = $this->receitaRepository->buscaDuplicado($atualizar->getData()->format("m"),
-                                                            $atualizar->getDescricao());
+    $comparaData = $this->retornaDuplicado($atualizar);
 
     if (!$comparaData->isEmpty()) {
-        throw new ReceitaException("Negado, já existe uma receita cadastrada com mesma descrição nesta data.", 400);
+        throw new ReceitaException("Negado, já existe uma receita cadastrada com mesma 
+                                    descrição nesta data.", 400);
     }
     
     $lancamento->descricao=$atualizar->getDescricao();
@@ -63,5 +63,16 @@ public function atualizarReceita($id, $atualizar)
 public function deletarReceita($id):int
 {
     return $this->receitaRepository->deletarReceita($id);
+}
+
+private function retornaDuplicado(ReceitaEntity $lancamento)
+{
+    return $this->receitaRepository->buscaDuplicado($lancamento->getData()->format('m'),
+    $lancamento->getDescricao());
+}
+
+public function listarAnoMes($ano, $mes)
+{
+    return $this->receitaRepository->listarAnoMes($ano, $mes);
 }
 }

@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LancamentoRequest;
 use App\Models\Despesa as ModelsDespesa;
 use App\Entities\Despesa;
+use App\Exceptions\DespesaException;
 use App\Exceptions\ReceitaException;
 use App\Service\DespesaService;
 use Illuminate\Http\JsonResponse;
 use DateTime as Data;
-
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 
 class DespesaController extends Controller
 {
@@ -33,14 +35,15 @@ class DespesaController extends Controller
 
             return new JsonResponse($criado, 201);
 
-        } catch (ReceitaException $e) {
+        } catch (DespesaException $e) {
             return new JsonResponse($e->getMessage(),$e->getCode());
         }
     }
 
-    public function listarTodasDespesas()
+    public function listarTodasDespesas(Request $request):Collection
     {
-        return $this->despesaService->listarTodasDespesas();
+        $busca=$request->query('descricao');
+        return $this->despesaService->listarTodasDespesas($busca);
     }
 
     public function ListarUmaDespesa($id):ModelsDespesa
@@ -50,12 +53,27 @@ class DespesaController extends Controller
 
     public function atualizarDespesa(LancamentoRequest $request, $id)
     {
-        return $this->despesaService->atualizarDespesa($id,$request->all());
+        try {
+            $lancamento= new Despesa(  $request->get('descricao'),
+                                       $request->get('valor'),
+                                       new Data ($request->get('data')),
+                                       $request->get('categoria'));
+                        
+            return $this->despesaService->atualizarDespesa($id,$lancamento);
+
+        } catch (DespesaException $e) {
+            return new JsonResponse($e->getMessage(),$e->getCode());
+        }
     }
 
     public function deletarDespesa($id):JsonResponse
     {
         $this->despesaService->deletarDespesa($id);
         return new JsonResponse("Despesa excluída.");
+    }
+
+    public function listarAnoMes($ano, $mes)
+    {
+        return $this->despesaService->listarAnoMes($ano,$mes);
     }
 }

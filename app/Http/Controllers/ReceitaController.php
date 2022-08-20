@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LancamentoRequest;
 use App\Entities\Receita;
 use App\Exceptions\ReceitaException;
+use App\Http\Requests\AtualizacaoRequest;
 use App\Service\ReceitaService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use DateTime as Data;
-use Exception;
+use Illuminate\Http\Request;
 
 class ReceitaController extends Controller
 {
@@ -38,9 +39,10 @@ class ReceitaController extends Controller
 
     }
 
-    public function listarTodasReceitas():Collection
+    public function listarTodasReceitas(Request $request):Collection
     {
-        return $this->receitaService->listarTodasReceitas();
+        $busca = $request->query('descricao');
+        return $this->receitaService->listarTodasReceitas($busca);
     }
 
     public function ListarUmaReceita($id)
@@ -48,7 +50,7 @@ class ReceitaController extends Controller
         return $this->receitaService->listarUmaReceita($id);
     }
 
-    public function atualizarReceita(LancamentoRequest $request, $id)
+    public function atualizarReceita(AtualizacaoRequest $request, $id)
     {
         try {
             $lancamento= new Receita(  $request->get('descricao'),
@@ -59,13 +61,16 @@ class ReceitaController extends Controller
         } catch (ReceitaException $e) {
             return new JsonResponse($e->getMessage(),$e->getCode());
         }
-        
-        
     }
 
     public function deletarReceita($id):JsonResponse
     {
         $this->receitaService->deletarReceita($id);
         return new JsonResponse("Receita excluída.");
+    }
+
+    public function listarAnoMes($ano, $mes)
+    {
+        return $this->receitaService->listarAnoMes($ano,$mes);
     }
 }

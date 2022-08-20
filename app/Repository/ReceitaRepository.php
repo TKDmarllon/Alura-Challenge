@@ -19,6 +19,11 @@ class ReceitaRepository{
         return Receita::all();
     }
 
+    public function listarBusca($busca):Collection
+    {
+        return Receita::where('descricao',$busca)->get();
+    }
+
     public function buscaDuplicado($data,$descricaoNova)
     {
         return Receita::where('descricao', $descricaoNova)
@@ -27,7 +32,7 @@ class ReceitaRepository{
 
     public function ListarUmaReceita($id)
     {
-        return Receita::findorfail($id);
+       return Receita::findorfail($id);
     }
 
     public function atualizarReceita($lancamento)
@@ -38,5 +43,15 @@ class ReceitaRepository{
     public function deletarReceita($id):int
     {
         return Receita::destroy($id);
+    }
+
+    public function listarAnoMes($ano, $mes)
+    {
+        return Receita::whereYear('data', '=', $ano)->whereMonth('data', '=', $mes)->get();
+    }
+
+    public function buscaDescricao($descricao)
+    {
+        return Receita::where('descricao', '=', $descricao)->get();
     }
 }
