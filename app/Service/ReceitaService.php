@@ -8,6 +8,8 @@ use App\Models\Receita;
 use App\Repository\ReceitaRepository;
 use Illuminate\Database\Eloquent\Collection;
 
+use function PHPUnit\Framework\isEmpty;
+
 class ReceitaService {
 
     protected $receitaService;
@@ -44,20 +46,25 @@ public function ListarUmaReceita($id):Receita
 
 public function atualizarReceita($id, $atualizar)
 {
-
     $lancamento=$this->receitaRepository->ListarUmaReceita($id);
-    $comparaData = $this->retornaDuplicado($atualizar);
 
+    $descricao=$lancamento->descricao=Empty($atualizar->getDescricao())?
+                            $lancamento->descricao:$atualizar->getDescricao();
+
+    $valor=$lancamento->valor=Empty($atualizar->getValor())?
+                            $lancamento->valor:$atualizar->getValor();
+
+    $data=$lancamento->data=Empty($atualizar->getData())?
+                            $lancamento->data:$atualizar->getData();
+
+    $comparaObjeto= new ReceitaEntity($descricao,$valor,$data);
+    $comparaData = $this->retornaDuplicado($comparaObjeto);
     if (!$comparaData->isEmpty()) {
         throw new ReceitaException("Negado, já existe uma receita cadastrada com mesma 
                                     descrição nesta data.", 400);
     }
-    
-    $lancamento->descricao=$atualizar->getDescricao();
-    $lancamento->data=$atualizar->getData();
-    $lancamento->valor=$atualizar->getValor();
 
-    $this->receitaRepository->atualizarReceita($lancamento);
+    return $this->receitaRepository->atualizarReceita($lancamento);
 }
 
 public function deletarReceita($id):int

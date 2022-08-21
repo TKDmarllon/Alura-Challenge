@@ -38,6 +38,7 @@ class ReceitaRepository{
     public function atualizarReceita($lancamento)
     {
         $lancamento->save();
+        return $lancamento;
     }
 
     public function deletarReceita($id):int
