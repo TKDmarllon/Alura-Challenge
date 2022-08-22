@@ -6,7 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class ReceitaSeeder extends Seeder
+class DespesaSeed extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,22 +15,25 @@ class ReceitaSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('receita')->insert([
+        DB::table('despesa')->insert([
             "descricao"=> "seed um",
             "valor"=> "1000",
-            "data"=> "2022-01-01"
+            "data"=> "2022-01-01",
+            "categoria"=>"Saúde"
         ]);
 
-        DB::table('receita')->insert([
+        DB::table('despesa')->insert([
             "descricao"=> "seed dois",
             "valor"=> "2000",
-            "data"=> "2022-02-02"
+            "data"=> "2022-02-02",
+            "categoria"=>"Transporte"
         ]);
 
-        DB::table('receita')->insert([
+        DB::table('despesa')->insert([
             "descricao"=> "seed tres",
             "valor"=> "3000",
-            "data"=> "2022-02-02"
+            "data"=> "2022-03-03",
+            "categoria"=>"Educaçao"
         ]);
     }
 }

@@ -15,6 +15,7 @@ class ReceitaTest extends TestCase
      *
      * @return void
      */
+
     public function test_criar()
     {
         $response = $this->post(route('receita.criar'),[
@@ -37,7 +38,7 @@ class ReceitaTest extends TestCase
 
     public function test_exibirUma()
     {
-        $response = $this->get(route('receita.uma',2),[
+        $response = $this->get(route('receita.uma',1),[
             
         ]);
 
@@ -46,7 +47,7 @@ class ReceitaTest extends TestCase
 
     public function test_atualizar()
     {
-        $response = $this->put(route('receita.atualizar',2),[
+        $response = $this->put(route('receita.atualizar',1),[
             "descricao"=>"atualizado",
             "valor"=>"500",
             "data"=>"01-03-2022"
