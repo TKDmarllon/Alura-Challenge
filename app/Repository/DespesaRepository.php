@@ -42,7 +42,8 @@ class DespesaRepository
 
     public function deletarDespesa($id):int
     {
-        return Despesa::destroy($id);
+        $deletar=Despesa::findorfail($id);
+        return Despesa::destroy($deletar);
     }
 
     public function listarAnoMes($ano, $mes)

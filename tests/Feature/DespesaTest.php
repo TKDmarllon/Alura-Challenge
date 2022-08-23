@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class DespesaTest extends TestCase
 {
+    use WithoutMiddleware;
     use RefreshDatabase;
     protected $seed = true;
     /**
@@ -25,7 +27,7 @@ class DespesaTest extends TestCase
             "categoria"=>"Saúde"
         ]);
 
-        $response->assertStatus(201);
+        $response->assertCreated();
     }
 
     public function test_exibirTodas()
@@ -33,8 +35,15 @@ class DespesaTest extends TestCase
         $response = $this->get(route('despesa.todas'),[
             
         ]);
-
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                '*' => [
+                     'descricao',
+                     'data',
+                     'valor',
+                     'categoria'
+                ]
+        ]);
     }
 
     public function test_exibirUma()
@@ -43,7 +52,14 @@ class DespesaTest extends TestCase
             
         ]);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+                 ->assertJsonStructure([
+            '*' => [
+                 'descricao',
+                 'data',
+                 'valor',
+                 'categoria'
+        ]]);
     }
 
     public function test_atualizar()
@@ -63,7 +79,7 @@ class DespesaTest extends TestCase
             
         ]);
 
-        $response->assertStatus(200);
+        $response->assertOk();
     }
 
     public function test_despesaMes()
@@ -188,10 +204,12 @@ class DespesaTest extends TestCase
 
     public function test_deletarErroId()
     {
-        $response = $this->delete(route('despesa.deletar',false),[
+        $response = $this->delete(route('despesa.deletar',0),[
             
         ]);
 
-        $response->assertStatus(405);
+        $response->assertStatus(404);
     }
+
+
 }

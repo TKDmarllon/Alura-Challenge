@@ -43,7 +43,8 @@ class ReceitaRepository{
 
     public function deletarReceita($id):int
     {
-        return Receita::destroy($id);
+        $deletar=Receita::findorfail($id);
+        return Receita::destroy($deletar);
     }
 
     public function listarAnoMes($ano, $mes)

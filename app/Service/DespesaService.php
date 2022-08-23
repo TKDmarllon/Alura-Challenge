@@ -11,7 +11,7 @@ use App\Exceptions\ReceitaException;
 
 class DespesaService {
 
-    protected $contaService; 
+    protected $depesaService; 
 
 public function __construct(
     DespesaRepository $despesaRepository
