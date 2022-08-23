@@ -29,8 +29,7 @@ public function registrar($registro)
 {
     $registro['password']=Hash::make($registro['password']);
     $this->userRepository->registrar($registro);
-
-    Auth::login($registro);
+    
     return New JsonResponse("Usuário criado!");
 }
 }
