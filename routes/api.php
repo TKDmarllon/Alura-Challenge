@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Route;
 
     Route::middleware('autenticacao')->group(function(){
 
+
         Route::post("/receita", [ReceitaController::class, "criarReceita"])->name('receita.criar');
         Route::get("/receitas", [ReceitaController::class, "listarTodasReceitas"])->name('receita.todas');
         Route::get("/receitas/{id}", [ReceitaController::class, "listarUmaReceita"])->name('receita.uma');
