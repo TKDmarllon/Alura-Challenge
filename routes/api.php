@@ -45,3 +45,7 @@ use Illuminate\Support\Facades\Route;
         Route::get("/despesas/{ano}/{mes}",[DespesaController::class, "listarAnoMes"])->name('despesa.anomes');
         Route::get("/despesas?descricao=xpto",[DespesaController::class, "listarTodasDespesas"])->name('despesa.todasbusca');
     });
+
+    Route::get("health", function(){
+        return "voltou!";
+    });
